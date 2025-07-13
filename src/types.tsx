@@ -38,3 +38,13 @@ export interface Order {
   currency: Currency;
   items: OrderItem[];
 }
+
+
+export interface OrdersPageProps {
+  setSelectedOrder: (orderId: string | null) => void;
+}
+
+export interface SpecificOrderPageProps {
+  orderId: string;
+  onBack: () => void;
+}

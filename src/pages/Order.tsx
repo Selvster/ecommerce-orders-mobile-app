@@ -5,81 +5,82 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import { PRIMARY_COLOR, LIGHT_GREY } from '../constants'; // Import colors
+import { PRIMARY_COLOR, LIGHT_GREY } from '../constants';
 import { ArrowLeft } from 'lucide-react-native';
-import { useOrder } from '../hooks/useGraphQl'; // Import useOrder hook
-
-interface SpecificOrderPageProps {
-  orderId: string;
-  onBack: () => void;
-}
+import { useOrder } from '../hooks/useGraphQl';
+import { SpecificOrderPageProps } from '../types';
+import LoadingIndicator from '../components/LoadingIndicator';
+import Error from '../components/Error';
 
 const OrderPage: React.FC<SpecificOrderPageProps> = ({ orderId, onBack }) => {
 
-  const { data, isLoading, isError } = useOrder(orderId); 
+  const { data, isLoading, isError } = useOrder(orderId);
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <LoadingIndicator />;
   }
 
-  if (isError) {
-    return <Text>Error loading order details</Text>;
-  }
 
   if (!data || !data.order) {
-    return <Text>No order found</Text>;
+    onBack(); 
+    return null;
   }
 
-  const order = data.order; 
+  const order = data.order;
 
   return (
     <>
-    <ArrowLeft size={24} color={PRIMARY_COLOR} onPress={onBack} style={{ margin: 10 }} />
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.detailsCard}>
-          <Text style={styles.detailTitle}>Order Information</Text>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>ID:</Text>
-            <Text style={styles.detailValue}>{order.id}</Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Total:</Text>
-            <Text style={styles.detailValue}>
-              {order.currency.symbol}{order.totalAmount.toFixed(2)} ({order.currency.label})
-            </Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Date:</Text>
-            <Text style={styles.detailValue}>{new Date(order.createdAt).toLocaleString()}</Text>
-          </View>
-
-          <Text style={styles.detailTitle}> { order.items.length} Item{order.items.length > 1 ? 's' : ''}
-            </Text>
-          {order.items.map((item, index) => (
-            <View key={index} style={styles.itemCard}>
-              <Text style={styles.itemName}> {item.product?.name}</Text>
-              <View style={styles.itemRow}>
-                <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
+      <ArrowLeft size={24} color={PRIMARY_COLOR} onPress={onBack} style={{ margin: 10 }} />
+      {
+        isError ? <Error error="Error loading order details" /> : (
+          <ScrollView style={styles.scrollView}>
+            <View style={styles.detailsCard}>
+              <Text style={styles.detailTitle}>Order Information</Text>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>ID:</Text>
+                <Text style={styles.detailValue}>{order.id}</Text>
               </View>
-              {item.selectedAttributes && item.selectedAttributes.length > 0 && (
-                <View style={styles.attributesContainer}>
-                  {item.selectedAttributes.map((attr, attrIndex) => (
-                    <Text key={attrIndex} style={styles.attributeText}>
-                      {attr.name}: {attr.value}
-                    </Text>
-                  ))}
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Total:</Text>
+                <Text style={styles.detailValue}>
+                  {order.currency.symbol}{order.totalAmount.toFixed(2)} ({order.currency.label})
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Date:</Text>
+                <Text style={styles.detailValue}>{new Date(order.createdAt).toLocaleString()}</Text>
+              </View>
+
+              <Text style={styles.detailTitle}> {order.items.length} Item{order.items.length > 1 ? 's' : ''}
+              </Text>
+              {order.items.map((item, index) => (
+                <View key={index} style={styles.itemCard}>
+                  <Text style={styles.itemName}> {item.product?.name}</Text>
+                  <View style={styles.itemRow}>
+                    <Text style={styles.itemDetail}>Quantity: {item.quantity}</Text>
+                  </View>
+                  {item.selectedAttributes && item.selectedAttributes.length > 0 && (
+                    <View style={styles.attributesContainer}>
+                      {item.selectedAttributes.map((attr, attrIndex) => (
+                        <Text key={attrIndex} style={styles.attributeText}>
+                          {attr.name}: {attr.value}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
                 </View>
-              )}
+              ))}
             </View>
-          ))}
-        </View>
-      </ScrollView>
+          </ScrollView>
+        )
+      }
+
     </>
   );
 };
 
 const styles = StyleSheet.create({
- 
+
   scrollView: {
     flex: 1,
     padding: 15,

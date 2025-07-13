@@ -1,32 +1,54 @@
-import React from 'react';
+import React , {useState, useCallback} from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  RefreshControl 
 } from 'react-native';
 import { PRIMARY_COLOR, TEXT_COLOR } from '../constants';
 import { Package, Calendar, DollarSign } from 'lucide-react-native';
 import { useOrders } from '../hooks/useGraphQl';
+import LoadingIndicator from '../components/LoadingIndicator';
+import Error from '../components/Error';
+import { OrdersPageProps } from '../types'; 
 
-interface OrdersPageProps {
-  setSelectedOrder: (orderId: string | null) => void;
-}
 
 const OrdersPage: React.FC<OrdersPageProps> = ({ setSelectedOrder }) => {
-  const {data , isLoading , isError} = useOrders();
+  const {data , isLoading , isError , refetch} = useOrders();
+    const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } catch (error) {
+      console.error('Error refreshing orders:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <LoadingIndicator/>
   }
   if (isError) {
-    return <Text>Error loading orders</Text>;
+    return <Error error="Error loading orders" />;
   }
   
   return (
 
-      <ScrollView contentContainerStyle={styles.ordersGridContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.ordersGridContainer} showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={PRIMARY_COLOR}
+          colors={[PRIMARY_COLOR]} 
+        />
+      }
+      >
         {data?.orders.map((order) => (
           <TouchableOpacity
             key={order.id}
