@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "ecommerce-admin-mobile-app",
-    "slug": "ecommerce-admin-mobile-app",
+    "name": "Ecommerce Orders",
+    "slug": "ecommerce-orders",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,13 +17,26 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.mazenamir2.ecommerceorders"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ea003f88-e1c8-4bc9-8c8f-68445b74b9a5"
+      }
+    },
+    "owner": "mazenamir-2",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ea003f88-e1c8-4bc9-8c8f-68445b74b9a5"
     }
   }
 }
